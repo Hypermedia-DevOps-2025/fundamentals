@@ -6,7 +6,7 @@
 
 ---
 
-### Instalare manuala
+## Instalare manuala
 
 - ia mult timp pana instalezi chestiile si consuma resurse  
 - mai usor de implementat un container facut de altcineva  
@@ -15,7 +15,7 @@
 
 ---
 
-### Docker
+## Docker
 
 - imaginile sunt un fel de sabloane: de exemplu, pornesti de la o imagine Ubuntu goala  
 - creezi un container cu ce ai nevoie (bash, MariaDB etc.) => un sistem impachetat, reutilizabil  
