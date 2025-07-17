@@ -11,4 +11,4 @@ SELECT o.id AS order_id,
     	JOIN customers c ON o.customer_id=c.id
     	JOIN order_items oi ON o.id=oi.order_id
     	JOIN products p ON oi.product_id=p.id
-	ORDEY BY o.id;
+	ORDER BY o.id;
