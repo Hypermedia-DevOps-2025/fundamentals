@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mariadb-service:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: oradea22
+      MYSQL_DATABASE: testdb
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - stefro-custom-network
+
+  webapp-service:
+    build: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - mariadb-service
+    networks:
+      - stefro-custom-network
+
+volumes:
+  db_data:
+
+networks:
+  stefro-custom-network:
+    driver: bridge
+
