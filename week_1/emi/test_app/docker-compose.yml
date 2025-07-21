@@ -2,17 +2,34 @@ version: '3.8'
 
 services:
   mariadb:
-    image: mariadb
-    container_name: mariadb
+    build: ./db
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: test_db
-      MYSQL_USER: emi
-      MYSQL_PASSWORD: 1234
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
       - network-app
+    healthcheck:
+      test: ["CMD-SHELL","mysqladmin ping -h localhost -u${DB_USER} -p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    networks:
+      - network-app
+    healthcheck:
+      test: ["CMD","redis-cli","ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   webapp:
     build: .
@@ -20,12 +37,29 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - network-app
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    ports:
+      - "8082:80"
+    depends_on:
+      mariadb:
+        condition: service_healthy
     networks:
       - network-app
 
 volumes:
   mariadb_data:
-
+    external: true
 networks:
   network-app:
