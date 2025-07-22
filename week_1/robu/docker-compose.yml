@@ -17,7 +17,7 @@ services:
       - backend
 
   db:
-    image: mysql:8.0
+    image: mysql:8.0.33
     container_name: database
     restart: unless-stopped
     env_file: .env
@@ -39,12 +39,15 @@ services:
       - backend
 
   webapp:
-    build:  # Corrected build section
+    build:
       context: ./webapp
       dockerfile: Dockerfile.prod
     container_name: application
     restart: unless-stopped
-    env_file: .env
+    command: sh
+    env_file: ./webapp/.env
+    ports:
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -56,11 +59,17 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
-    ports:
-      - "8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    cpus: 0.5
     networks:
       - frontend
       - backend
+
 
   phpmyadmin:
     image: phpmyadmin:latest
