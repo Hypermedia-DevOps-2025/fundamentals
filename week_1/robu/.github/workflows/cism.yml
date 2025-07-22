@@ -1,0 +1,19 @@
+name: CISM Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  stefan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Stefan's name
+        run: echo "Hello, I am Stefan nice to meet you today :))!"
+
+  teammate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print teammate's name
+        run: echo "Hello, I am David and Emi!"
