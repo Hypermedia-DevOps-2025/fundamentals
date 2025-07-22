@@ -4,30 +4,23 @@ on:
   push:
     branches:
       - main
-      - workflow
+      - workflows  # make sure this matches your branch name
 
 jobs:
   stefan:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Print Stefan's name
-        run: echo "My name is Stefan Robu 👋"
+      - name: Echo Stefan's name
+        run: echo "My name is Stefan Robu "
 
   emi:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Print Emi's name
-        run: echo "Hello from Emi"
+      - name: Echo Emi's name
+        run: echo "Hello from Emi "
 
   david:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Print David's name
-        run: echo "Hi, I'm David"
-
+      - name: Echo David's name
+        run: echo "Hi, I'm David "
