@@ -3,7 +3,7 @@ name: CISM Workflow
 on:
   push:
     branches:
-      - main
+      - workflow
 
 jobs:
   stefan:
