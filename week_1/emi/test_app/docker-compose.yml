@@ -18,6 +18,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    user: "999"
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    security_opt:
+      - "no-new-privileges:true"
 
   redis:
     image: redis:alpine
@@ -30,10 +43,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    user: "999"
+    read_only: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    security_opt:
+      - "no-new-privileges:true"
 
   webapp:
-    build: .
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
     container_name: nginx-app
+    read_only: true
+    tmpfs:
+      - /tmp
     ports:
       - "8080:80"
     depends_on:
@@ -43,6 +73,17 @@ services:
         condition: service_healthy
     networks:
       - network-app
+    user: "nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    security_opt:
+      - "no-new-privileges:true"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -57,9 +98,20 @@ services:
         condition: service_healthy
     networks:
       - network-app
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    security_opt:
+      - "no-new-privileges:true"
 
 volumes:
   mariadb_data:
     external: true
 networks:
   network-app:
+
