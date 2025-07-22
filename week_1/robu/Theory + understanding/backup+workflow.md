@@ -11,4 +11,9 @@ Backup proceduri
 
 -Stocarea Backup stocate in afara docker host , pot fi incriptate si tine backupul pana la 30 de zile
 
--
+          Understand workflow syntax: triggers, jobs, steps, and actions
+
+Triggers : defineste cand workflow-ul ruleaza
+Jobs : Un workflow are mai multe jobs inside care ruleaza independent intro secventa
+ Steps : sunt comenzi sau actiuni executate inauntru joburilor
+Actions : Actions are reusable units, either official or community-made, that do common tasks, like checking out code, setting up environments

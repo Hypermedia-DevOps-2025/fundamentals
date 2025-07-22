@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - workflows  # make sure this matches your branch name
+      - workflows
 
 jobs:
   stefan:
