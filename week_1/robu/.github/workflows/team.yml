@@ -1,0 +1,25 @@
+name: Team Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - workflow
+jobs:
+  stefan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Stefan's name
+        run: echo "My name is Stefan Robu 👋"
+
+  alice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Alice's name
+        run: echo "Hello from Alice"
+
+  bob:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Bob's name
+        run: echo "Hi, I'm Bob"
