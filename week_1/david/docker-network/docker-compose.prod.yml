@@ -2,9 +2,10 @@ version: '3.8'
 
 services:
   mariadb:
-    build:
-      context: .
-      dockerfile: Dockerfile.mariadb
+    # build:                         # ❌ build NU merge cu docker stack deploy
+    #   context: .
+    #   dockerfile: Dockerfile.mariadb
+    image: mariadb-img              # ✅ imagine construită deja local
     container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -13,28 +14,37 @@ services:
       - db-data:/var/lib/mysql
     networks:
       - app-net
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    # healthcheck:                  # 🔧 opțional, docker stack le ignoră în unele cazuri
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
   redis:
-    image: redis:alpine
+    image: redis:7.2.1-alpine
     container_name: redis
     ports:
       - "${REDIS_PORT}:6379"
     networks:
       - app-net
-healthcheck:
-  test: ["CMD", "redis-cli", "ping"]
-  interval: 10s
-  timeout: 3s
-  retries: 3
-
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "ping"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 3
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin:5.2.1
     container_name: phpmyadmin
     ports:
       - "${PMA_PORT}:80"
@@ -43,41 +53,49 @@ healthcheck:
       PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     depends_on:
-      mariadb:
-        condition: service_healthy
+      - mariadb
     networks:
+      - mariadb
       - app-net
-healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost"]
-  interval: 10s
-  timeout: 3s
-  retries: 3
-
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 3
 
   webapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # build:                         # ❌ build NU merge cu docker stack deploy
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: webapp-img               # ✅ imagine construită deja local
     container_name: webapp
     ports:
       - "8081:80"
-restart: always
     depends_on:
-      mariadb:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - mariadb
+      - redis
     networks:
       - app-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 3
 
 volumes:
   db-data:
 
 networks:
   app-net:
-healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost"]
-  interval: 10s
-  timeout: 3s
-  retries: 3
+  mariadb:
 

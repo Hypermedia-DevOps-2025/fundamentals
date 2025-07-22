@@ -10,11 +10,12 @@ jobs:
   print-name:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Echo my name
+        run: echo "DavidMan27"
 
-      - name: Echo name
-        run: |
-          cd week_1/david
-          echo "DavidMan27"
+  print-datetime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show current date and time
+        run: date
 
