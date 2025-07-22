@@ -5,21 +5,29 @@ on:
     branches:
       - main
       - workflow
+
 jobs:
   stefan:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Print Stefan's name
         run: echo "My name is Stefan Robu 👋"
 
-  alice:
+  emi:
     runs-on: ubuntu-latest
     steps:
-      - name: Print Alice's name
-        run: echo "Hello from Alice"
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Print Emi's name
+        run: echo "Hello from Emi"
 
-  bob:
+  david:
     runs-on: ubuntu-latest
     steps:
-      - name: Print Bob's name
-        run: echo "Hi, I'm Bob"
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Print David's name
+        run: echo "Hi, I'm David"
+
