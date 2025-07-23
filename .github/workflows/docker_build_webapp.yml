@@ -21,7 +21,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t emiliangf/webapp:latest -t emiliangf/webapp:${{ github.sha }} ./webapp
+          docker build -t emiliangf/webapp:latest -t emiliangf/webapp:${{ github.sha }} ./test_app/webapp
 
       - name: Push Docker image
         run: |
