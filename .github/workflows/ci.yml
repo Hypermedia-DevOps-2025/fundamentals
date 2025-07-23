@@ -1,0 +1,36 @@
+name: CI Push Workflow
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run test
+        run: echo "Running tests on push"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Build image
+        run: echo "Build image triggered"
+
+  scan:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Security scan
+        run: echo "Scanning image"
+
+  only-main:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Runs only on main
+        run: echo "This runs only on main branch"
+

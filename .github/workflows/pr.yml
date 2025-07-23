@@ -1,0 +1,13 @@
+name: PR Workflow
+
+on:
+  pull_request:
+
+jobs:
+  pr-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: PR test
+        run: echo "Testing PR"
+
