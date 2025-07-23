@@ -1,0 +1,17 @@
+name: Echo name and date
+
+on: push
+
+jobs:
+  print-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print my name
+        run: echo "David"
+
+  print-date:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print current date
+        run: date
+
