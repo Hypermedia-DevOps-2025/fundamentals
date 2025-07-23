@@ -34,7 +34,7 @@ jobs:
 
       - name: Run container and test health
         run: |
-          docker run -d --name test-webapp -p 8080:80 test-webapp
+          docker run -d --name test-webapp -p 8080:80 emiliangf/webapp:latest
           sleep 5
           curl --fail http://localhost:8080 || exit 1
 
