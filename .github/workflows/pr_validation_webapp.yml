@@ -1,0 +1,32 @@
+name: PR Validation Workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: PR HTML & Health Test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install HTML validator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tidy
+
+      - name: Validate HTML
+        run: tidy -qe ./week_1/emi/test_app/webapp/index.html
+
+      - name: Build Docker image
+        run: docker build -t test-webapp ./week_1/emi/test_app/webapp
+
+      - name: Run container & curl check
+        run: |
+          docker run -d --name test-webapp -p 8080:80 test-webapp
+          sleep 5
+          curl --fail http://localhost:8080 || exit 1
+
