@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - feature/*
-      
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,9 +23,6 @@ jobs:
         with:
           username: ${{ secrets.EMI_DOCKER_USERNAME }}
           password: ${{ secrets.EMI_DOCKER_PASSWORD }}
-
-      - name: Create builder instance
-        run: docker buildx create --use
 
       - name: Build and push multi-platform Docker image
         run: |
@@ -66,7 +63,7 @@ jobs:
     needs: build
 
     steps:
-      - name: Scan image with Trivy
+      - name: Install Trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: emiliangf/webapp:${{ github.sha }}
