@@ -1,0 +1,22 @@
+name: Simple Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Say hello from Alice
+        run: echo "Hello, I am Alice!"
+
+  say-hello-bob:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hello from Bob
+        run: echo "Hello, I am Bob!"
