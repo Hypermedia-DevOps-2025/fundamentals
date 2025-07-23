@@ -32,7 +32,7 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/webapp:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/webapp:${{ github.sha }} \
-                       -f week_1/david/docker-network/Dockerfile .
+                       -f week_1/david/docker-network/
 
       - name: Push Docker image
         run: |
