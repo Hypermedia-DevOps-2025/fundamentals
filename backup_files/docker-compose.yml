@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-net
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webapp
+    ports:
+      - "8080:80"
+    depends_on:
+      - mariadb
+    networks:
+      - app-net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    depends_on:
+      - mariadb
+    networks:
+      - app-net
+
+volumes:
+  db-data:
+
+networks:
+  app-net:
+
+
