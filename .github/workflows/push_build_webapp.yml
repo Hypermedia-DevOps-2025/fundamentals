@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - feature/*
-
+      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,14 +24,18 @@ jobs:
           username: ${{ secrets.EMI_DOCKER_USERNAME }}
           password: ${{ secrets.EMI_DOCKER_PASSWORD }}
 
-      - name: Build multi-platform image
+      - name: Create builder instance
+        run: docker buildx create --use
+
+      - name: Build and push multi-platform Docker image
         run: |
-          docker buildx create --use
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t emiliangf/webapp:latest \
             -t emiliangf/webapp:${{ github.sha }} \
-            --push .
+            --push \
+            -f ./week_1/emi/test_app/webapp/Dockerfile \
+            ./week_1/emi/test_app/webapp
 
   test:
     runs-on: ubuntu-latest
