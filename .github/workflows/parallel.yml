@@ -6,18 +6,48 @@ jobs:
   build-webapp:
     runs-on: ubuntu-latest
     steps:
-      - name: Build Webapp
-        run: echo "Building webapp..."
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Simulate building webapp
+        run: |
+          echo "Building webapp..." > webapp-log.txt
+
+      - name: Upload webapp log
+        uses: actions/upload-artifact@v3
+        with:
+          name: webapp-log
+          path: webapp-log.txt
 
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Build Docs
-        run: echo "Building documentation..."
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Simulate building docs
+        run: |
+          echo "Building docs..." > docs-log.txt
+
+      - name: Upload docs log
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs-log
+          path: docs-log.txt
 
   run-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Run Tests
-        run: echo "Running tests..."
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Simulate test run
+        run: |
+          echo "Tests passed!" > test-results.txt
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test-results.txt
 
