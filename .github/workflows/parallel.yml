@@ -1,51 +1,45 @@
 name: Parallel CI Jobs
 
-on:
-  push:
-    branches:
-      - feature/work-branch
+on: [push]
 
 jobs:
   build-webapp:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Simulate webapp build
-        run: echo "Building webapp..." && echo "Webapp done!" > webapp-log.txt
-
-      - name: Upload webapp log
+      - uses: actions/checkout@v3
+      - name: Build Webapp
+        run: echo "Building webapp..."
+      - name: Generate Webapp Report
+        run: echo "Build report for webapp" > webapp-report.txt
+      - name: Upload Webapp Report
         uses: actions/upload-artifact@v4
         with:
-          name: webapp-log
-          path: webapp-log.txt
+          name: webapp-report
+          path: webapp-report.txt
 
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Simulate docs build
-        run: echo "Building docs..." && echo "Docs done!" > docs-log.txt
-
-      - name: Upload docs log
+      - uses: actions/checkout@v3
+      - name: Build Docs
+        run: echo "Building documentation..."
+      - name: Generate Docs Report
+        run: echo "Build report for docs" > docs-report.txt
+      - name: Upload Docs Report
         uses: actions/upload-artifact@v4
         with:
-          name: docs-log
-          path: docs-log.txt
+          name: docs-report
+          path: docs-report.txt
 
   run-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run tests
-        run: echo "Running tests..." && echo "All tests passed!" > test-results.txt
-
-      - name: Upload test results
+      - uses: actions/checkout@v3
+      - name: Run Tests
+        run: echo "Running tests..."
+      - name: Generate Test Results
+        run: echo "Test results content" > test-results.txt
+      - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
           name: test-results
@@ -54,27 +48,25 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
+      - name: Docker Layer Cache
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
+      - name: Build Docker Image
+        run: docker build -t my-image:latest ./week_1/david/docker-network/
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
+  log-custom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Custom Logger
+        uses: ./.github/actions/log-message
         with:
-          context: ./week_1/david/docker-network
-          file: ./week_1/david/docker-network/Dockerfile
-          push: false
-          tags: my-image:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          message: " Reusable action a fost executată cu succes!"
 

@@ -1,0 +1,13 @@
+name: "Log Message"
+description: "A reusable action that logs a message"
+
+inputs:
+  message:
+    description: "The message to log"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: echo "${{ inputs.message }}"
+
