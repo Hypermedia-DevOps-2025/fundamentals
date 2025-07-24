@@ -56,11 +56,17 @@ jobs:
         with:
           image-ref: test-webapp:${{ matrix.version }}
 
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          SAFE_NAME=$(echo "${{ matrix.base_image }}" | sed 's/[^a-zA-Z0-9_.-]/-/g')
+          echo "safe_name=${SAFE_NAME}" >> $GITHUB_OUTPUT
+
       - name: Upload logs and artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logs_test_webapp_${{ matrix.base_image }}_${{ matrix.version }}
+          name: logs-test-webapp-${{ steps.sanitize.outputs.safe_name }}-${{ matrix.version }}
           path: |
             build_output.log
             container.log

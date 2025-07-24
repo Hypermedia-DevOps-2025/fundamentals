@@ -34,5 +34,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logs_pr_validation_webapp
+          name: logs-pr-validation-webapp
           path: ./week_1/emi/logs/
