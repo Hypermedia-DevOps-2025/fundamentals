@@ -1,0 +1,33 @@
+name: Parallel jobs demo
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+
+jobs:
+  build-webapp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build webapp
+        run: echo "Building webapp..."
+
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build docs
+        run: echo "Generating docs..."
+
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run tests
+        run: echo "Running test suite"
+
