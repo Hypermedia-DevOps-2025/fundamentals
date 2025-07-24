@@ -7,14 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Simulate building webapp
-        run: |
-          echo "Building webapp..." > webapp-log.txt
+        run: echo "Building webapp..." > webapp-log.txt
 
       - name: Upload webapp log
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: webapp-log
           path: webapp-log.txt
@@ -23,14 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Simulate building docs
-        run: |
-          echo "Building docs..." > docs-log.txt
+        run: echo "Building docs..." > docs-log.txt
 
       - name: Upload docs log
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docs-log
           path: docs-log.txt
@@ -39,14 +37,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Simulate test run
-        run: |
-          echo "Tests passed!" > test-results.txt
+        run: echo "Tests passed!" > test-results.txt
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: test-results.txt
