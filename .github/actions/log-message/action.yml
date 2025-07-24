@@ -1,14 +1,12 @@
-name: "Log Message"
-description: "A reusable action that logs a message"
-
+name: "Log message"
+description: "Logs a message passed as input"
 inputs:
   message:
-    description: "The message to log"
+    description: "Message to log"
     required: true
-
 runs:
   using: "composite"
   steps:
-    - shell: bash
-      run: echo "${{ inputs.message }}"
+    - run: echo "${{ inputs.message }}"
+      shell: bash
 
