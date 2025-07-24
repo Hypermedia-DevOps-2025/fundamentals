@@ -1,4 +1,4 @@
-name: parallel
+name: Parallel Workflow
 
 on:
   push:
@@ -12,7 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build webapp log
+      - name: Build webapp
+        run: echo "Building webapp..."
+
+      - name: Save webapp log
         run: echo "Webapp build completed" > webapp-log.txt
 
       - name: Upload webapp log
@@ -27,8 +30,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build docs log
-        run: echo "Docs build completed" > docs-log.txt
+      - name: Build docs
+        run: echo "Generating docs..."
+
+      - name: Save docs log
+        run: echo "Docs generated" > docs-log.txt
 
       - name: Upload docs log
         uses: actions/upload-artifact@v4
@@ -42,8 +48,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run test results
-        run: echo "Test results: All passed" > test-results.txt
+      - name: Run tests
+        run: echo "Running tests..."
+
+      - name: Save test results
+        run: echo "All tests passed" > test-results.txt
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -60,29 +69,24 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image with caching
+      - name: Build Docker image with cache
         uses: docker/build-push-action@v5
         with:
           context: ./week_1/david/docker-network
           file: ./week_1/david/docker-network/Dockerfile
           push: false
           load: false
-          tags: user/image:latest
-
-      - name: Generate dummy node report
-        run: |
-          for version in 14 16 18; do
-            echo "Node.js Report for v$version" > node-report-$version.txt
-          done
-
-      - name: Upload reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-reports
-          path: node-report-*.txt
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   log-custom:
-    uses: ./.github/actions/log-message
-    with:
-      message: "All jobs finished successfully."
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log message using custom action
+        uses: ./.github/actions/log-message
+        with:
+          message: "All jobs triggered"
 
