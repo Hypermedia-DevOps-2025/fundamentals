@@ -1,4 +1,4 @@
-name: Parallel CI Jobs
+name: parallel.yml
 
 on: push
 
@@ -6,16 +6,12 @@ jobs:
   build-webapp:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build webapp
-        run: echo "Building web application..."
-
-      - name: Save webapp log
+      - uses: actions/checkout@v4
+      - name: Build Webapp
+        run: echo "Building webapp..." && sleep 2
+      - name: Save Webapp Log
         run: echo "Webapp build log" > webapp.log
-
-      - name: Upload webapp log
+      - name: Upload Webapp Artifact
         uses: actions/upload-artifact@v4
         with:
           name: webapp-log
@@ -24,16 +20,12 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build documentation
-        run: echo "Building docs..."
-
-      - name: Save docs log
+      - uses: actions/checkout@v4
+      - name: Build Docs
+        run: echo "Building docs..." && sleep 2
+      - name: Save Docs Log
         run: echo "Docs build log" > docs.log
-
-      - name: Upload docs log
+      - name: Upload Docs Artifact
         uses: actions/upload-artifact@v4
         with:
           name: docs-log
@@ -42,26 +34,19 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run tests
-        run: echo "Running tests..."
-
-      - name: Save test results
-        run: echo "Test results" > test-results.txt
-
-      - name: Upload test results
+      - uses: actions/checkout@v4
+      - name: Run Tests
+        run: echo "Running tests..." && sleep 2
+      - name: Save Test Results
+        run: echo "Tests passed" > results.log
+      - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: test-results.txt
+          path: results.log
 
   docker-build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -80,7 +65,8 @@ jobs:
       - name: Build Docker image with cache
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./week_1/david/docker-network/
+          file: ./week_1/david/docker-network/Dockerfile
           push: false
           tags: myapp:test
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -90,4 +76,5 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
 
