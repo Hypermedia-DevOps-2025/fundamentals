@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: logs_pr_validation_webapp
-          path: ./week_1/emi/logs
+          path: ./week_1/emi/logs/

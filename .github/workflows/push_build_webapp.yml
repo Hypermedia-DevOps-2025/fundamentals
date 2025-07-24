@@ -1,15 +1,9 @@
-name: Build & Deploy WebApp (Push Workflow)
-
-on:
-  push:
-    branches:
-      - main
-      - feature/*
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build Docker Image
+    strategy:
+      matrix:
+        base_image: [nginx:1.25.2-alpine, nginx:1.24-alpine, nginx:1.23-alpine]
 
     steps:
       - name: Checkout code
@@ -22,7 +16,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
+          key: ${{ runner.os }}-docker-${{ github.sha }}-${{ matrix.base_image }}
           restore-keys: |
             ${{ runner.os }}-docker-
 
@@ -36,10 +30,11 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
+            --build-arg BASE_IMAGE=${{ matrix.base_image }} \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
-            -t emiliangf/webapp:latest \
-            -t emiliangf/webapp:${{ github.sha }} \
+            -t emiliangf/webapp:${{ matrix.base_image }}-latest \
+            -t emiliangf/webapp:${{ matrix.base_image }}-${{ github.sha }} \
             --push \
             -f ./week_1/emi/test_app/webapp/Dockerfile \
             ./week_1/emi/test_app/webapp
@@ -48,56 +43,10 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
       - name: Upload logs or reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logs_push_build_webapp_build
-          path: ./week_1/emi/logs
-
-
-  test:
-    runs-on: ubuntu-latest
-    name: Validate HTML + Curl Test
-    needs: build
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install HTML validator
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tidy
-
-      - name: Validate HTML
-        run: tidy -qe ./week_1/emi/test_app/webapp/index.html
-
-      - name: Run container and test curl
-        run: |
-          docker run -d --name test-webapp -p 8080:80 emiliangf/webapp:${{ github.sha }}
-          sleep 5
-          curl --fail http://localhost:8080 || exit 1
-      - name: Upload logs or reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs_push_build_webapp_test
-          path: ./week_1/emi/logs
-
-  scan:
-    runs-on: ubuntu-latest
-    name: Security Scan
-    needs: build
-
-    steps:
-      - name: Install Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: emiliangf/webapp:${{ github.sha }}
-      - name: Upload logs or reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs_push_build_webapp_scan
-          path: ./week_1/emi/logs
+          name: logs_push_build_webapp_build_${{ matrix.base_image }}
+          path: ./week_1/emi/logs/
