@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - workflow4.0
+      - feature/IN55-58-61_Autoimages_test_Sepworkflows
 
 jobs:
   build-and-push:
