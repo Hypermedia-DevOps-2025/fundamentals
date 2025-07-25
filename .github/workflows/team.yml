@@ -25,7 +25,7 @@ jobs:
       - name: Echo David's name
         run: echo "Hi, I'm David "
 
- docker_build_and_push:
+  docker_build_and_push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
