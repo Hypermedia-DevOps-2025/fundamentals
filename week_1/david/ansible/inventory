@@ -1,0 +1,6 @@
+[web]
+192.168.56.10 ansible_ssh_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/keys/web_key
+
+[db]
+192.168.56.11 ansible_ssh_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/keys/db_key
+
