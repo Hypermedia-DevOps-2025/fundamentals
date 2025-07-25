@@ -66,11 +66,15 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Build Docker image for scanning
         run: docker build -t stefro22/webapp:latest ./week_1/robu/webapp
-      - name: Install Trivy scanner
-        run: |
-          sudo apt-get update && sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.44.0_Linux-64bit.deb
-          sudo dpkg -i trivy_0.44.0_Linux-64bit.deb
+      - name: Install Trivy
+  run: |
+    sudo apt-get update
+    sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+    wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+    echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+    sudo apt-get update
+    sudo apt-get install -y trivy
+
       - name: Scan Docker image for vulnerabilities
         run: trivy image stefro22/webapp:latest
 
