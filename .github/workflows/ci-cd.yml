@@ -31,9 +31,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --cache-from=type=local,src=/tmp/.buildx-cache \
-                       --cache-to=type=local,dest=/tmp/.buildx-cache-new \
-                       -t ${{ steps.set-tag.outputs.image-tag }} ./week_1/robu/webapp
+          docker buildx build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache-new \
+            -t ${{ steps.set-tag.outputs.image-tag }} \
+            --load ./week_1/robu/webapp
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
