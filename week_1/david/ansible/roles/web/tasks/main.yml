@@ -1,0 +1,25 @@
+---
+- name: Install packages for web
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - nginx
+    - curl
+    - git
+
+- name: Set hostname
+  hostname:
+    name: "web-server"
+
+- name: Set timezone
+  timezone:
+    name: "{{ timezone }}"
+
+- name: Deploy custom index.html
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify: restart nginx
+

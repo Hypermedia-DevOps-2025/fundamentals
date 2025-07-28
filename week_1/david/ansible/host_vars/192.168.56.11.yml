@@ -1,0 +1,3 @@
+hostname: db-server
+mysql_port: 3306
+
