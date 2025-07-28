@@ -32,6 +32,11 @@ jobs:
         with:
           name: build-logs-${{ matrix.php-version }}
           path: build.log
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ sectrts.OCKER_HUB_USERNAME_ROBU }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD_ROBU }}
 
       - name: Push Docker image
         run: docker push stefro22/webapp:${{ matrix.php-version }}
