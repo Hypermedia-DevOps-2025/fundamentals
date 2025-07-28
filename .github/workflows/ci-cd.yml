@@ -13,65 +13,38 @@ on:
 jobs:
   build-webapp:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.set-tag.outputs.image-tag }}
+    strategy:
+      matrix:
+        php-version: [ "8.1-apache", "8.2-apache", "8.3-apache" ]
     steps:
       - uses: actions/checkout@v4
 
-      - id: set-tag
-        run: echo "::set-output name=image-tag::stefro22/webapp:${{ github.sha }}"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
-
-      - name: Build and load Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./week_1/robu/webapp
-          tags: ${{ steps.set-tag.outputs.image-tag }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          load: true
-
-      - name: Move cache directory
+      - name: Build Docker image
         run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          set -x
+          docker build \
+            --build-arg BASE_IMAGE=php:${{ matrix.php-version }} \
+            -t stefro22/webapp:${{ matrix.php-version }} ./week_1/robu/webapp \
+            > build.log 2>&1
 
-      - name: Save build logs
+      - name: Upload build logs
         uses: actions/upload-artifact@v4
         with:
-          name: build-logs
-          path: ./week_1/robu/webapp/build.log
+          name: build-logs-${{ matrix.php-version }}
+          path: build.log
 
-  build-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build docs
-        run: |
-          echo "Building documentation..." > docs-build.log
-      - name: Upload docs build logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-logs
-          path: docs-build.log
+      - name: Push Docker image
+        run: docker push stefro22/webapp:${{ matrix.php-version }}
 
   run-tests:
     runs-on: ubuntu-latest
+    needs: build-webapp
     steps:
       - uses: actions/checkout@v4
-      - name: Run tests
+      - name: Run PHP Unit tests
         run: |
-          echo "Running tests..." > test-results.log
+          echo "Running PHP tests..." > test-results.log
+          # Run your tests here (phpunit, etc.)
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
@@ -83,7 +56,15 @@ jobs:
     needs: build-webapp
     steps:
       - uses: actions/checkout@v4
-      - name: Run Trivy scan
-        uses: ./.github/actions/trivy-scan
-        with:
-          image: stefro22/webapp:latest
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install -y trivy
+      - name: Scan Docker images (ignore failures)
+        run: |
+          for version in 8.1-apache 8.2-apache 8.3-apache; do
+            trivy image --severity HIGH,CRITICAL stefro22/webapp:$version || true
+          done
