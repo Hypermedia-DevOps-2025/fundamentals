@@ -43,7 +43,7 @@ jobs:
           name: build-logs
           path: ./week_1/robu/webapp/build.log
 
-  build-docs:
+build-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +56,7 @@ jobs:
           name: docs-logs
           path: docs-build.log
 
-  run-tests:
+run-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -69,7 +69,7 @@ jobs:
           name: test-results
           path: test-results.log
 
-  security-scan:
+security-scan:
     runs-on: ubuntu-latest
     needs: build-webapp
     steps:
