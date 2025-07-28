@@ -16,31 +16,38 @@ jobs:
     outputs:
       image-tag: ${{ steps.set-tag.outputs.image-tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - id: set-tag
         run: echo "::set-output name=image-tag::stefro22/webapp:${{ github.sha }}"
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Cache Docker layers
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-docker-
 
-      - name: Build Docker image
+      - name: Build and load Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./week_1/robu/webapp
+          tags: ${{ steps.set-tag.outputs.image-tag }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          load: true
+
+      - name: Move cache directory
         run: |
-          docker buildx build \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache-new \
-            -t ${{ steps.set-tag.outputs.image-tag }} \
-            --load ./week_1/robu/webapp
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Save build logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: build-logs
           path: ./week_1/robu/webapp/build.log
