@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - workflow5.0
+      - feature/IN64-65_workflows_paralel
   pull_request:
     branches:
       - main
-      - workflow5.0
+      - feature/IN64-65_workflows_paralel
 
 jobs:
   build-webapp:
