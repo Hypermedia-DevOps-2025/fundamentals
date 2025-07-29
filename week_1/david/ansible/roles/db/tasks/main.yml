@@ -1,0 +1,14 @@
+---
+- name: Install packages for db
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - mysql-server
+    - vim
+
+- name: Set hostname
+  hostname:
+    name: "db-server"
+

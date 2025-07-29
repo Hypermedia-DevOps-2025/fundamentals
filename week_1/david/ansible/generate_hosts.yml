@@ -1,0 +1,14 @@
+---
+- name: Generate custom hosts file
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Template /etc/hosts with dynamic data
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+
