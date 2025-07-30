@@ -1,0 +1,74 @@
+name: Team Workflow with Tests and Docker Build
+
+on:
+  push:
+    branches:
+      - main
+      - workflows3.0
+  pull_request:
+    branches:
+      - main
+      - workflows3.0
+
+jobs:
+  stefan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Stefan's name
+        run: echo "My name is Stefan Robu "
+
+  emi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Emi's name
+        run: echo "Hello from Emi "
+
+  david:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo David's name
+        run: echo "Hi, I'm David"
+
+  test-html:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tidy
+        run: sudo apt-get install -y tidy
+      - name: Validate HTML files
+        run: |
+          find ./week_1/robu/webapp -name '*.html' -exec tidy -errors -q {} \;
+
+  test-container:
+    runs-on: ubuntu-latest
+    needs: test-html
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image for testing only
+        run: docker build -t test-webapp ./week_1/robu/webapp
+      - name: Run container health check
+        run: |
+          docker run -d --rm --name test-webapp-instance -p 8080:80 test-webapp
+          sleep 5
+          curl -f http://localhost:8080 || (echo "Health check failed" && exit 1)
+          docker stop test-webapp-instance
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test-container
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build Docker image for scanning
+        run: docker build -t stefro22/webapp:latest ./week_1/robu/webapp
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+      - name: Scan Docker image for vulnerabilities
+        run: trivy image stefro22/webapp:latest
