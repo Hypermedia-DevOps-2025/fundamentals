@@ -1,0 +1,8 @@
+[mysqld]
+user            = mysql
+port            = {{ mysql_port }}
+bind-address    = {{ mysql_bind_address }}
+max_connections = {{ mysql_max_connections }}
+
+[client]
+port            = {{ mysql_port }}

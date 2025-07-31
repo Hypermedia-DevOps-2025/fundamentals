@@ -1,0 +1,13 @@
+---
+db_host: 192.168.56.12          # IP-ul sau hostname-ul serverului DB din inventar
+db_user: ansibleuser            # utilizatorul MySQL pentru conexiune
+db_password: ansiblepassword    # parola pentru MySQL
+db_name: mydatabase             # numele bazei de date folosită
+
+apache_port: 80                 # portul pe care Apache ascultă
+web_packages:
+  - apache2
+  - php
+  - libapache2-mod-php
+  - php-mysql
+

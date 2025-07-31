@@ -1,4 +1,4 @@
-name: Test WebApp
+name: Test WebApp (Matrix & Logs)
 
 on:
   push:
@@ -11,10 +11,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        base_image: [nginx:alpine, httpd:2.4]
+        version: [v1, v2]
+
+    name: Test with ${{ matrix.base_image }} - ${{ matrix.version }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Install HTML validator (tidy)
         run: |
@@ -25,20 +34,41 @@ jobs:
         run: |
           tidy -qe ./week_1/emi/test_app/webapp/index.html
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
+      - name: Build Docker image with matrix args
         run: |
-          docker build -t test-webapp ./week_1/emi/test_app/webapp
+          set -x
+          docker build \
+            --build-arg BASE_IMAGE=${{ matrix.base_image }} \
+            --build-arg APP_VERSION=${{ matrix.version }} \
+            -t test-webapp:${{ matrix.version }} \
+            ./week_1/emi/test_app/webapp \
+            | tee build_output.log
 
-      - name: Run container and test health
+      - name: Run container and test with curl
         run: |
-          docker run -d --name test-webapp -p 8080:80 emiliangf/webapp:latest
+          set -x
+          docker run -d --name test-webapp -p 8080:80 test-webapp:${{ matrix.version }} | tee container.log
           sleep 5
-          curl --fail http://localhost:8080 || exit 1
+          curl -v http://localhost:8080 | tee curl_output.log
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: test-webapp
+          image-ref: test-webapp:${{ matrix.version }}
+
+      - name: Sanitize artifact name
+        id: sanitize
+        run: |
+          SAFE_NAME=$(echo "${{ matrix.base_image }}" | sed 's/[^a-zA-Z0-9_.-]/-/g')
+          echo "safe_name=${SAFE_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Upload logs and artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-test-webapp-${{ steps.sanitize.outputs.safe_name }}-${{ matrix.version }}
+          path: |
+            build_output.log
+            container.log
+            curl_output.log
+            ./week_1/emi/logs/

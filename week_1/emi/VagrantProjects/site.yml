@@ -1,0 +1,11 @@
+- hosts: web
+  become: yes
+  roles:
+    - common
+    - webserver
+
+- hosts: db
+  become: yes
+  roles:
+    - common
+    - dbserver
