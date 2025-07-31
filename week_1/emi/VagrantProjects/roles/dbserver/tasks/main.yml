@@ -1,0 +1,20 @@
+- name: Install MySql server
+  apt:
+    name: mysql-server
+    state: present
+    update_cache: yes
+
+- name: MySql server is running
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Deploy custom MySQL config
+  template:
+    src: my.cnf.j2
+    dest: /etc/mysql/my.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart MySQL
