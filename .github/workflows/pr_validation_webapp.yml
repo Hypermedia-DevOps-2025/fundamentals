@@ -30,9 +30,3 @@ jobs:
           sleep 5
           curl --fail http://localhost:8080 || exit 1
 
-      - name: Upload logs or reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs-pr-validation-webapp
-          path: ./week_1/emi/logs/

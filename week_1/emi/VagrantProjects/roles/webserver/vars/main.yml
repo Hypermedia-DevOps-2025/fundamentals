@@ -1,7 +1,0 @@
-apache_config_path: /etc/apache2/sites-available/000-default.conf
-web_packages:
-  - apache2
-  - php
-  - libapache2-mod-php
-  - php-mysql
-

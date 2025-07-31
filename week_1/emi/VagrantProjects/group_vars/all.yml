@@ -1,4 +1,0 @@
-default_user: ansible admin
-common_packages:
-  - curl
-  - vim
