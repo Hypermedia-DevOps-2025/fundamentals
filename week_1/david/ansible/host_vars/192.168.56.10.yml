@@ -1,0 +1,3 @@
+hostname: web-server
+nginx_port: 80
+

@@ -1,0 +1,6 @@
+timezone: Europe/Bucharest
+packages_common:
+  - git
+  - curl
+  - vim
+

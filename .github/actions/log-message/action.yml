@@ -1,0 +1,12 @@
+name: "Log message"
+description: "Logs a message passed as input"
+inputs:
+  message:
+    description: "Message to log"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: echo "${{ inputs.message }}"
+      shell: bash
+

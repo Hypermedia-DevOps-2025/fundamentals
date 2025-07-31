@@ -1,0 +1,29 @@
+---
+- name: Update all VMs and install common tools
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+
+    - name: Install essential tools
+      apt:
+        name:
+          - git
+          - curl
+          - vim
+        state: present
+
+    - name: Set timezone to Europe/Bucharest
+      timezone:
+        name: Europe/Bucharest
+
+    - name: Set hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+
